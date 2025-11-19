@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Amazon Campaign Name Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 960px;
+      background: #020617;
+      border-radius: 18px;
+      padding: 24px 24px 28px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.9);
+      border: 1px solid #1e293b;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #e5e7eb;
+    }
+
+    h1 span {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #9ca3af;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #9ca3af;
+    }
+
+    input[type="text"],
+    select {
+      border-radius: 10px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px 10px;
+      color: #e5e7eb;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+      background: #020617;
+    }
+
+    select:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .initials-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .button-secondary {
+      border-radius: 10px;
+      border: 1px solid #1d4ed8;
+      background: #020617;
+      color: #bfdbfe;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .button-secondary:hover {
+      background: #1d4ed8;
+      color: white;
+    }
+
+    .button-secondary:active {
+      transform: translateY(1px);
+    }
+
+    .output-card {
+      margin-top: 24px;
+      padding: 14px 14px 16px;
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+      background: radial-gradient(circle at top left, #0f172a, #020617 40%);
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .output-header h2 {
+      font-size: 0.95rem;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+    }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .campaign-preview {
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+      padding: 10px 11px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid #111827;
+      color: #e5e7eb;
+      min-height: 22px;
+      word-break: break-all;
+    }
+
+    .campaign-preview.placeholder {
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+      gap: 8px;
+    }
+
+    .button-primary {
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s, box-shadow 0.15s, filter 0.15s;
+      box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4);
+    }
+
+    .button-primary:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 14px 30px rgba(22, 163, 74, 0.5);
+    }
+
+    .button-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .app {
+        padding: 18px;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>
+      AMZ Campaign Name Generator
+      <span>Based on your Excel logic</span>
+    </h1>
+
+    <div class="grid">
+      <!-- Brand Code -->
+      <div class="field">
+        <label for="brandCode">Brand Code</label>
+        <select id="brandCode">
+          <option value="">Select Brand Code</option>
+          <option value="TD">TD</option>
+          <option value="CG">CG</option>
+          <option value="PC">PC</option>
+        </select>
+      </div>
+
+      <!-- Product Name Short Form -->
+      <div class="field">
+        <label for="productShort">Product Name Short Form</label>
+        <input type="text" id="productShort" placeholder="(Optional for now)" />
+      </div>
+
+      <!-- Parent -->
+      <div class="field">
+        <label for="parent">Parent</label>
+        <input type="text" id="parent" placeholder="Parent ASIN / Name" />
+      </div>
+
+      <!-- Child -->
+      <div class="field">
+        <label for="child">Child</label>
+        <input type="text" id="child" placeholder="Child ASIN / Variant" />
+      </div>
+
+      <!-- Objective -->
+      <div class="field">
+        <label for="objective">Objective</label>
+        <select id="objective">
+          <option value="">Select Objective</option>
+          <option value="Discover">Discover</option>
+          <option value="Competition">Competition</option>
+          <option value="BKW">BKW</option>
+          <option value="BP Defense">BP Defense</option>
+          <option value="Ranking Keyword">Ranking Keyword</option>
+        </select>
+      </div>
+
+      <!-- Targeting (depends on Objective) -->
+      <div class="field">
+        <label for="targeting">Targeting</label>
+        <select id="targeting" disabled>
+          <option value="">Select Objective first</option>
+        </select>
+        <div class="hint">Options change based on Objective.</div>
+      </div>
+
+      <!-- Match Type (depends on Targeting) -->
+      <div class="field">
+        <label for="matchType">Match Type</label>
+        <select id="matchType" disabled>
+          <option value="">Select Targeting first</option>
+        </select>
+      </div>
+
+      <!-- Owner Initials -->
+      <div class="field">
+        <label for="ownerInitials">Owner Initials</label>
+        <div class="initials-row">
+          <input
+            type="text"
+            id="ownerInitials"
+            maxlength="4"
+            placeholder="e.g. MY"
+          />
+          <button type="button" class="button-secondary" id="usePPCN">
+            Use PPCN
+          </button>
+        </div>
+        <div class="hint">
+          Typed initials auto-uppercase &amp; max 2 letters (PPCN allowed).
+        </div>
+      </div>
+    </div>
+
+    <div class="output-card">
+      <div class="output-header">
+        <h2>Campaign Name</h2>
+        <div class="pill">Live Preview</div>
+      </div>
+      <div id="campaignPreview" class="campaign-preview placeholder">
+        Waiting for selections…
+      </div>
+      <div class="actions-row">
+        <button type="button" class="button-primary" id="copyButton">
+          <span>Copy to Clipboard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Objective -> Targeting mapping
+    const objectiveToTargeting = {
+      "Discover": ["Auto", "Manual KW", "Category", "Competition"],
+      "Competition": ["Manual PAT", "Manual KW", "Category", "BKW"],
+      "BKW": ["Manual KW"],
+      "BP Defense": ["Manual PAT"],
+      "Ranking Keyword": ["Manual KW"]
+    };
+
+    // Targeting -> Match Type mapping
+    const targetingToMatchType = {
+      "Auto": ["None"],
+      "Manual KW": ["Broad", "Expanded", "Phrase", "Exact"],
+      "Category": ["None"],
+      "Competition": ["None"],
+      "Manual PAT": ["None"],
+      "BKW": ["Exact"],
+      "BP Defense": ["Exact"],
+      "Ranking Keyword": ["Exact"]
+    };
+
+    const brandCodeEl = document.getElementById("brandCode");
+    const objectiveEl = document.getElementById("objective");
+    const targetingEl = document.getElementById("targeting");
+    const matchTypeEl = document.getElementById("matchType");
+    const ownerInitialsEl = document.getElementById("ownerInitials");
+    const productShortEl = document.getElementById("productShort");
+    const parentEl = document.getElementById("parent");
+    const childEl = document.getElementById("child");
+    const previewEl = document.getElementById("campaignPreview");
+    const copyButton = document.getElementById("copyButton");
+    const usePPCNButton = document.getElementById("usePPCN");
+
+    function resetSelect(select, placeholderText, disabled = true) {
+      select.innerHTML = "";
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = placeholderText;
+      select.appendChild(opt);
+      select.disabled = disabled;
+    }
+
+    function populateSelect(select, options, placeholderText) {
+      resetSelect(select, placeholderText, false);
+      options.forEach(val => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        select.appendChild(opt);
+      });
+    }
+
+    function updateTargetingOptions() {
+      const objective = objectiveEl.value;
+      if (!objective || !objectiveToTargeting[objective]) {
+        resetSelect(targetingEl, "Select Objective first", true);
+        resetSelect(matchTypeEl, "Select Targeting first", true);
+        updatePreview();
+        return;
+      }
+      const options = objectiveToTargeting[objective];
+      populateSelect(targetingEl, options, "Select Targeting");
+      resetSelect(matchTypeEl, "Select Targeting first", true);
+      updatePreview();
+    }
+
+    function updateMatchTypeOptions() {
+      const targeting = targetingEl.value;
+      if (!targeting || !targetingToMatchType[targeting]) {
+        resetSelect(matchTypeEl, "Select Targeting first", true);
+        updatePreview();
+        return;
+      }
+      const options = targetingToMatchType[targeting];
+      populateSelect(matchTypeEl, options, "Select Match Type");
+      updatePreview();
+    }
+
+    function sanitizeOwnerInitials() {
+      let v = ownerInitialsEl.value;
+      // If PPCN, allow it as-is
+      if (v.toUpperCase() === "PPCN") {
+        ownerInitialsEl.value = "PPCN";
+        return;
+      }
+      // Otherwise enforce A–Z only, uppercase, max 2 letters
+      v = v.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
+      ownerInitialsEl.value = v;
+    }
+
+    function buildCampaignName() {
+      const brand = brandCodeEl.value || "";
+      const objective = objectiveEl.value || "";
+      const targeting = targetingEl.value || "";
+      const matchType = matchTypeEl.value || "";
+      const initials = ownerInitialsEl.value || "";
+
+      if (!brand && !objective && !targeting && !matchType && !initials) {
+        return "";
+      }
+
+      const parts = [brand, objective, targeting, matchType, initials].filter(
+        Boolean
+      );
+      return parts.join(" | ");
+    }
+
+    function updatePreview() {
+      const name = buildCampaignName();
+      if (!name) {
+        previewEl.textContent = "Waiting for selections…";
+        previewEl.classList.add("placeholder");
+      } else {
+        previewEl.textContent = name;
+        previewEl.classList.remove("placeholder");
+      }
+    }
+
+    // Event listeners
+    brandCodeEl.addEventListener("change", updatePreview);
+    objectiveEl.addEventListener("change", updateTargetingOptions);
+    targetingEl.addEventListener("change", updateMatchTypeOptions);
+    matchTypeEl.addEventListener("change", updatePreview);
+
+    ownerInitialsEl.addEventListener("input", function () {
+      sanitizeOwnerInitials();
+      updatePreview();
+    });
+
+    usePPCNButton.addEventListener("click", function () {
+      ownerInitialsEl.value = "PPCN";
+      updatePreview();
+    });
+
+    productShortEl.addEventListener("input", updatePreview);
+    parentEl.addEventListener("input", updatePreview);
+    childEl.addEventListener("input", updatePreview);
+
+    copyButton.addEventListener("click", function () {
+      const name = buildCampaignName();
+      if (!name) {
+        alert("No campaign name to copy yet.");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(name).then(
+          () => alert("Campaign name copied to clipboard!"),
+          () => alert("Could not copy to clipboard. You can manually select and copy.")
+        );
+      } else {
+        // Fallback
+        const temp = document.createElement("textarea");
+        temp.value = name;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+          document.execCommand("copy");
+          alert("Campaign name copied to clipboard!");
+        } catch (e) {
+          alert("Could not copy to clipboard. You can manually select and copy.");
+        }
+        document.body.removeChild(temp);
+      }
+    });
+
+    // Initial state
+    resetSelect(targetingEl, "Select Objective first", true);
+    resetSelect(matchTypeEl, "Select Targeting first", true);
+    updatePreview();
+  </script>
+</body>
+</html>
