@@ -19,7 +19,7 @@
     }
 
     .app {
-      width: 100%;
+      width: 100100%;
       max-width: 960px;
       background: #020617;
       border-radius: 18px;
@@ -201,17 +201,9 @@
       color: #6b7280;
       margin-top: 4px;
     }
-
-    @media (max-width: 640px) {
-      .app {
-        padding: 18px;
-      }
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
   </style>
 </head>
+
 <body>
   <div class="app">
     <h1>
@@ -234,19 +226,19 @@
       <!-- Product Name Short Form -->
       <div class="field">
         <label for="productShort">Product Name Short Form</label>
-        <input type="text" id="productShort" placeholder="(Optional for now)" />
+        <input type="text" id="productShort" />
       </div>
 
       <!-- Parent -->
       <div class="field">
         <label for="parent">Parent</label>
-        <input type="text" id="parent" placeholder="Parent ASIN / Name" />
+        <input type="text" id="parent" />
       </div>
 
       <!-- Child -->
       <div class="field">
         <label for="child">Child</label>
-        <input type="text" id="child" placeholder="Child ASIN / Variant" />
+        <input type="text" id="child" />
       </div>
 
       <!-- Objective -->
@@ -262,16 +254,15 @@
         </select>
       </div>
 
-      <!-- Targeting (depends on Objective) -->
+      <!-- Targeting -->
       <div class="field">
         <label for="targeting">Targeting</label>
         <select id="targeting" disabled>
           <option value="">Select Objective first</option>
         </select>
-        <div class="hint">Options change based on Objective.</div>
       </div>
 
-      <!-- Match Type (depends on Targeting) -->
+      <!-- Match Type -->
       <div class="field">
         <label for="matchType">Match Type</label>
         <select id="matchType" disabled>
@@ -283,22 +274,13 @@
       <div class="field">
         <label for="ownerInitials">Owner Initials</label>
         <div class="initials-row">
-          <input
-            type="text"
-            id="ownerInitials"
-            maxlength="4"
-            placeholder="e.g. MY"
-          />
-          <button type="button" class="button-secondary" id="usePPCN">
-            Use PPCN
-          </button>
-        </div>
-        <div class="hint">
-          Typed initials auto-uppercase &amp; max 2 letters (PPCN allowed).
+          <input type="text" id="ownerInitials" maxlength="4" placeholder="e.g. MV" />
+          <button type="button" class="button-secondary" id="usePPCN">Use PPCN</button>
         </div>
       </div>
     </div>
 
+    <!-- Output -->
     <div class="output-card">
       <div class="output-header">
         <h2>Campaign Name</h2>
@@ -309,14 +291,14 @@
       </div>
       <div class="actions-row">
         <button type="button" class="button-primary" id="copyButton">
-          <span>Copy to Clipboard</span>
+          Copy to Clipboard
         </button>
       </div>
     </div>
+
   </div>
 
   <script>
-    // Objective -> Targeting mapping
     const objectiveToTargeting = {
       "Discover": ["Auto", "Manual KW", "Category", "Competition"],
       "Competition": ["Manual PAT", "Manual KW", "Category", "BKW"],
@@ -325,7 +307,6 @@
       "Ranking Keyword": ["Manual KW"]
     };
 
-    // Targeting -> Match Type mapping
     const targetingToMatchType = {
       "Auto": ["None"],
       "Manual KW": ["Broad", "Expanded", "Phrase", "Exact"],
@@ -338,104 +319,94 @@
     };
 
     const brandCodeEl = document.getElementById("brandCode");
+    const productShortEl = document.getElementById("productShort");
+    const parentEl = document.getElementById("parent");
+    const childEl = document.getElementById("child");
     const objectiveEl = document.getElementById("objective");
     const targetingEl = document.getElementById("targeting");
     const matchTypeEl = document.getElementById("matchType");
     const ownerInitialsEl = document.getElementById("ownerInitials");
-    const productShortEl = document.getElementById("productShort");
-    const parentEl = document.getElementById("parent");
-    const childEl = document.getElementById("child");
     const previewEl = document.getElementById("campaignPreview");
-    const copyButton = document.getElementById("copyButton");
     const usePPCNButton = document.getElementById("usePPCN");
+    const copyButton = document.getElementById("copyButton");
 
-    function resetSelect(select, placeholderText, disabled = true) {
+    function resetSelect(select, placeholder, disabled = true) {
       select.innerHTML = "";
       const opt = document.createElement("option");
       opt.value = "";
-      opt.textContent = placeholderText;
+      opt.textContent = placeholder;
       select.appendChild(opt);
       select.disabled = disabled;
     }
 
-    function populateSelect(select, options, placeholderText) {
-      resetSelect(select, placeholderText, false);
-      options.forEach(val => {
+    function populateSelect(select, options, placeholder) {
+      resetSelect(select, placeholder, false);
+      options.forEach(v => {
         const opt = document.createElement("option");
-        opt.value = val;
-        opt.textContent = val;
+        opt.value = v;
+        opt.textContent = v;
         select.appendChild(opt);
       });
     }
 
     function updateTargetingOptions() {
-      const objective = objectiveEl.value;
-      if (!objective || !objectiveToTargeting[objective]) {
-        resetSelect(targetingEl, "Select Objective first", true);
-        resetSelect(matchTypeEl, "Select Targeting first", true);
+      const obj = objectiveEl.value;
+      if (!obj || !objectiveToTargeting[obj]) {
+        resetSelect(targetingEl, "Select Objective first");
+        resetSelect(matchTypeEl, "Select Targeting first");
         updatePreview();
         return;
       }
-      const options = objectiveToTargeting[objective];
+      const options = objectiveToTargeting[obj];
       populateSelect(targetingEl, options, "Select Targeting");
-      resetSelect(matchTypeEl, "Select Targeting first", true);
+      resetSelect(matchTypeEl, "Select Targeting first");
       updatePreview();
     }
 
     function updateMatchTypeOptions() {
-      const targeting = targetingEl.value;
-      if (!targeting || !targetingToMatchType[targeting]) {
-        resetSelect(matchTypeEl, "Select Targeting first", true);
+      const t = targetingEl.value;
+      if (!t || !targetingToMatchType[t]) {
+        resetSelect(matchTypeEl, "Select Targeting first");
         updatePreview();
         return;
       }
-      const options = targetingToMatchType[targeting];
+      const options = targetingToMatchType[t];
       populateSelect(matchTypeEl, options, "Select Match Type");
       updatePreview();
     }
 
-    function sanitizeOwnerInitials() {
+    function sanitizeInitials() {
       let v = ownerInitialsEl.value;
-      // If PPCN, allow it as-is
       if (v.toUpperCase() === "PPCN") {
         ownerInitialsEl.value = "PPCN";
         return;
       }
-      // Otherwise enforce A–Z only, uppercase, max 2 letters
       v = v.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
       ownerInitialsEl.value = v;
     }
 
-  function buildCampaignName() {
-  const brand = brandCodeEl.value || "";
-  const productShort = productShortEl.value || "";
-  const parent = parentEl.value || "";
-  const child = childEl.value || "";
-  const objective = objectiveEl.value || "";
-  const targeting = targetingEl.value || "";
-  const matchType = matchTypeEl.value || "";
-  const initials = ownerInitialsEl.value || "";
+    function buildCampaignName() {
+      const brand = brandCodeEl.value || "";
+      const prod = productShortEl.value || "";
+      const parent = parentEl.value || "";
+      const child = childEl.value || "";
+      const obj = objectiveEl.value || "";
+      const targeting = targetingEl.value || "";
+      const match = matchTypeEl.value || "";
+      const initials = ownerInitialsEl.value || "";
 
-  // If everything is empty, don't show anything
-  if (!brand && !productShort && !parent && !child && !objective && !targeting && !matchType && !initials) {
-    return "";
-  }
+      const parts = [
+        brand,
+        prod,
+        parent,
+        child,
+        obj,
+        targeting,
+        match,
+        initials
+      ].filter(Boolean);
 
-  // Option A order (Excel header order)
-  const parts = [
-    brand,
-    productShort,
-    parent,
-    child,
-    objective,
-    targeting,
-    matchType,
-    initials
-  ].filter(Boolean);
-
-  return parts.join(" | ");
-}
-
+      return parts.join(" | ");
     }
 
     function updatePreview() {
@@ -449,57 +420,32 @@
       }
     }
 
-    // Event listeners
     brandCodeEl.addEventListener("change", updatePreview);
-    objectiveEl.addEventListener("change", updateTargetingOptions);
-    targetingEl.addEventListener("change", updateMatchTypeOptions);
-    matchTypeEl.addEventListener("change", updatePreview);
-
-    ownerInitialsEl.addEventListener("input", function () {
-      sanitizeOwnerInitials();
-      updatePreview();
-    });
-
-    usePPCNButton.addEventListener("click", function () {
-      ownerInitialsEl.value = "PPCN";
-      updatePreview();
-    });
-
     productShortEl.addEventListener("input", updatePreview);
     parentEl.addEventListener("input", updatePreview);
     childEl.addEventListener("input", updatePreview);
 
-    copyButton.addEventListener("click", function () {
-      const name = buildCampaignName();
-      if (!name) {
-        alert("No campaign name to copy yet.");
-        return;
-      }
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(name).then(
-          () => alert("Campaign name copied to clipboard!"),
-          () => alert("Could not copy to clipboard. You can manually select and copy.")
-        );
-      } else {
-        // Fallback
-        const temp = document.createElement("textarea");
-        temp.value = name;
-        document.body.appendChild(temp);
-        temp.select();
-        try {
-          document.execCommand("copy");
-          alert("Campaign name copied to clipboard!");
-        } catch (e) {
-          alert("Could not copy to clipboard. You can manually select and copy.");
-        }
-        document.body.removeChild(temp);
-      }
+    objectiveEl.addEventListener("change", updateTargetingOptions);
+    targetingEl.addEventListener("change", updateMatchTypeOptions);
+    matchTypeEl.addEventListener("change", updatePreview);
+
+    ownerInitialsEl.addEventListener("input", () => {
+      sanitizeInitials();
+      updatePreview();
     });
 
-    // Initial state
-    resetSelect(targetingEl, "Select Objective first", true);
-    resetSelect(matchTypeEl, "Select Targeting first", true);
-    updatePreview();
+    usePPCNButton.addEventListener("click", () => {
+      ownerInitialsEl.value = "PPCN";
+      updatePreview();
+    });
+
+    copyButton.addEventListener("click", () => {
+      const text = buildCampaignName();
+      if (!text) return alert("Nothing to copy.");
+      navigator.clipboard.writeText(text);
+      alert("Copied!");
+    });
+
   </script>
 </body>
 </html>
