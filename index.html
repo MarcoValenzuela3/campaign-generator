@@ -406,21 +406,36 @@
       ownerInitialsEl.value = v;
     }
 
-    function buildCampaignName() {
-      const brand = brandCodeEl.value || "";
-      const objective = objectiveEl.value || "";
-      const targeting = targetingEl.value || "";
-      const matchType = matchTypeEl.value || "";
-      const initials = ownerInitialsEl.value || "";
+  function buildCampaignName() {
+  const brand = brandCodeEl.value || "";
+  const productShort = productShortEl.value || "";
+  const parent = parentEl.value || "";
+  const child = childEl.value || "";
+  const objective = objectiveEl.value || "";
+  const targeting = targetingEl.value || "";
+  const matchType = matchTypeEl.value || "";
+  const initials = ownerInitialsEl.value || "";
 
-      if (!brand && !objective && !targeting && !matchType && !initials) {
-        return "";
-      }
+  // If everything is empty, don't show anything
+  if (!brand && !productShort && !parent && !child && !objective && !targeting && !matchType && !initials) {
+    return "";
+  }
 
-      const parts = [brand, objective, targeting, matchType, initials].filter(
-        Boolean
-      );
-      return parts.join(" | ");
+  // Option A order (Excel header order)
+  const parts = [
+    brand,
+    productShort,
+    parent,
+    child,
+    objective,
+    targeting,
+    matchType,
+    initials
+  ].filter(Boolean);
+
+  return parts.join(" | ");
+}
+
     }
 
     function updatePreview() {
@@ -488,3 +503,4 @@
   </script>
 </body>
 </html>
+
