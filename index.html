@@ -4,449 +4,316 @@
   <meta charset="UTF-8" />
   <title>Amazon Campaign Name Generator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <style>
     :root {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #0f172a;
       color: #e5e7eb;
     }
-
     body {
       margin: 0;
       display: flex;
       justify-content: center;
       padding: 24px;
     }
-
     .app {
-      width: 100100%;
+      width: 100%;
       max-width: 960px;
       background: #020617;
       border-radius: 18px;
       padding: 24px 24px 28px;
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.9);
       border: 1px solid #1e293b;
+      box-shadow: 0 20px 40px rgba(15,23,42,0.9);
     }
-
     h1 {
       margin-top: 0;
       font-size: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: #e5e7eb;
     }
-
-    h1 span {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: #9ca3af;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-top: 12px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
     label {
-      font-size: 0.78rem;
-      text-transform: uppercase;
+      font-size: 0.75rem;
       letter-spacing: 0.07em;
       color: #9ca3af;
     }
-
-    input[type="text"],
-    select {
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      background: #020617;
+    input, select {
       padding: 8px 10px;
-      color: #e5e7eb;
-      font-size: 0.88rem;
-      outline: none;
-      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
-    }
-
-    input[type="text"]:focus,
-    select:focus {
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
       background: #020617;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      color: #e5e7eb;
+      font-size: 0.9rem;
     }
-
     select:disabled {
       opacity: 0.4;
       cursor: not-allowed;
     }
-
-    .initials-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 16px;
+      margin-top: 12px;
     }
-
-    .button-secondary {
-      border-radius: 10px;
-      border: 1px solid #1d4ed8;
-      background: #020617;
-      color: #bfdbfe;
-      padding: 8px 10px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.15s, border-color 0.15s, transform 0.1s;
-    }
-
-    .button-secondary:hover {
-      background: #1d4ed8;
-      color: white;
-    }
-
-    .button-secondary:active {
-      transform: translateY(1px);
-    }
-
     .output-card {
       margin-top: 24px;
-      padding: 14px 14px 16px;
+      padding: 14px;
       border-radius: 14px;
       border: 1px solid #1f2937;
       background: radial-gradient(circle at top left, #0f172a, #020617 40%);
     }
-
-    .output-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .output-header h2 {
-      font-size: 0.95rem;
-      margin: 0;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #9ca3af;
-    }
-
-    .pill {
-      border-radius: 999px;
-      border: 1px solid #1f2937;
-      padding: 4px 10px;
-      font-size: 0.7rem;
-      color: #9ca3af;
-    }
-
     .campaign-preview {
-      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
-        Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: "JetBrains Mono", monospace;
       font-size: 0.9rem;
-      padding: 10px 11px;
+      padding: 10px;
       border-radius: 10px;
-      background: #020617;
       border: 1px solid #111827;
-      color: #e5e7eb;
-      min-height: 22px;
-      word-break: break-all;
+      background: #020617;
+      min-height: 25px;
     }
-
-    .campaign-preview.placeholder {
+    .placeholder {
       color: #6b7280;
       font-style: italic;
     }
-
-    .actions-row {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 10px;
-      gap: 8px;
-    }
-
     .button-primary {
-      border-radius: 10px;
-      border: none;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: white;
       padding: 8px 14px;
-      font-size: 0.82rem;
-      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #16a34a;
+      color: white;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform 0.1s, box-shadow 0.15s, filter 0.15s;
-      box-shadow: 0 10px 25px rgba(22, 163, 74, 0.4);
-    }
-
-    .button-primary:hover {
-      filter: brightness(1.05);
-      box-shadow: 0 14px 30px rgba(22, 163, 74, 0.5);
-    }
-
-    .button-primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
-    }
-
-    .hint {
-      font-size: 0.75rem;
-      color: #6b7280;
-      margin-top: 4px;
+      font-weight: 600;
     }
   </style>
 </head>
 
 <body>
   <div class="app">
-    <h1>
-      AMZ Campaign Name Generator
-      <span>Based on your Excel logic</span>
-    </h1>
+    <h1>AMZ Campaign Name Generator</h1>
 
     <div class="grid">
-      <!-- Brand Code -->
-      <div class="field">
-        <label for="brandCode">Brand Code</label>
+      <div>
+        <label>Brand Code</label>
         <select id="brandCode">
-          <option value="">Select Brand Code</option>
+          <option value="">Select</option>
           <option value="TD">TD</option>
           <option value="CG">CG</option>
           <option value="PC">PC</option>
         </select>
       </div>
 
-      <!-- Product Name Short Form -->
-      <div class="field">
-        <label for="productShort">Product Name Short Form</label>
-        <input type="text" id="productShort" />
+      <div>
+        <label>Product Name Short</label>
+        <input id="productShort" type="text" />
       </div>
 
-      <!-- Parent -->
-      <div class="field">
-        <label for="parent">Parent</label>
-        <input type="text" id="parent" />
+      <div>
+        <label>Parent</label>
+        <input id="parent" type="text" />
       </div>
 
-      <!-- Child -->
-      <div class="field">
-        <label for="child">Child</label>
-        <input type="text" id="child" />
+      <div>
+        <label>Child</label>
+        <input id="child" type="text" />
       </div>
 
-      <!-- Objective -->
-      <div class="field">
-        <label for="objective">Objective</label>
+      <div>
+        <label>Objective</label>
         <select id="objective">
           <option value="">Select Objective</option>
           <option value="Discover">Discover</option>
           <option value="Competition">Competition</option>
-          <option value="BKW">BKW</option>
+          <option value="BKW Defense">BKW Defense</option>
           <option value="BP Defense">BP Defense</option>
-          <option value="Ranking Keyword">Ranking Keyword</option>
+          <option value="Ranking KW">Ranking KW</option>
         </select>
       </div>
 
-      <!-- Targeting -->
-      <div class="field">
-        <label for="targeting">Targeting</label>
+      <div>
+        <label>Targeting</label>
         <select id="targeting" disabled>
           <option value="">Select Objective first</option>
         </select>
       </div>
 
-      <!-- Match Type -->
-      <div class="field">
-        <label for="matchType">Match Type</label>
+      <div>
+        <label>Match Type</label>
         <select id="matchType" disabled>
           <option value="">Select Targeting first</option>
         </select>
       </div>
 
-      <!-- Owner Initials -->
-      <div class="field">
-        <label for="ownerInitials">Owner Initials</label>
-        <div class="initials-row">
-          <input type="text" id="ownerInitials" maxlength="4" placeholder="e.g. MV" />
-          <button type="button" class="button-secondary" id="usePPCN">Use PPCN</button>
-        </div>
+      <div>
+        <label>Owner Initials</label>
+        <input id="ownerInitials" maxlength="4" placeholder="e.g. MV" />
       </div>
     </div>
 
-    <!-- Output -->
     <div class="output-card">
-      <div class="output-header">
-        <h2>Campaign Name</h2>
-        <div class="pill">Live Preview</div>
-      </div>
-      <div id="campaignPreview" class="campaign-preview placeholder">
-        Waiting for selections…
-      </div>
-      <div class="actions-row">
-        <button type="button" class="button-primary" id="copyButton">
-          Copy to Clipboard
-        </button>
-      </div>
+      <h3>Campaign Name</h3>
+      <div id="campaignPreview" class="campaign-preview placeholder">Waiting...</div>
+      <br />
+      <button id="copyButton" class="button-primary">Copy</button>
     </div>
-
   </div>
 
-  <script>
-    const objectiveToTargeting = {
-      "Discover": ["Auto", "Manual KW", "Category", "Competition"],
-      "Competition": ["Manual PAT", "Manual KW", "Category", "BKW"],
-      "BKW": ["Manual KW"],
-      "BP Defense": ["Manual PAT"],
-      "Ranking Keyword": ["Manual KW"]
-    };
+<script>
+/* ------------------ NEW UPDATED LOGIC --------------------- */
 
-    const targetingToMatchType = {
-      "Auto": ["None"],
-      "Manual KW": ["Broad", "Expanded", "Phrase", "Exact"],
-      "Category": ["None"],
-      "Competition": ["None"],
-      "Manual PAT": ["None"],
-      "BKW": ["Exact"],
-      "BP Defense": ["Exact"],
-      "Ranking Keyword": ["Exact"]
-    };
+const objectiveToTargeting = {
+  "Discover": ["Auto", "Category", "Manual KW"],
+  "Competition": ["Manual PAT", "Manual KW"],
+  "BKW Defense": ["Manual KW"],
+  "BP Defense": ["Manual PAT"],
+  "Ranking KW": ["Manual KW"]
+};
 
-    const brandCodeEl = document.getElementById("brandCode");
-    const productShortEl = document.getElementById("productShort");
-    const parentEl = document.getElementById("parent");
-    const childEl = document.getElementById("child");
-    const objectiveEl = document.getElementById("objective");
-    const targetingEl = document.getElementById("targeting");
-    const matchTypeEl = document.getElementById("matchType");
-    const ownerInitialsEl = document.getElementById("ownerInitials");
-    const previewEl = document.getElementById("campaignPreview");
-    const usePPCNButton = document.getElementById("usePPCN");
-    const copyButton = document.getElementById("copyButton");
+const targetingToMatchType = {
+  // Discover
+  "Auto": [],
+  "Category": ["Broad"],
+  "Manual KW (Discover)": ["Broad"],
 
-    function resetSelect(select, placeholder, disabled = true) {
-      select.innerHTML = "";
-      const opt = document.createElement("option");
-      opt.value = "";
-      opt.textContent = placeholder;
-      select.appendChild(opt);
-      select.disabled = disabled;
-    }
+  // Competition
+  "Manual PAT (Competition)": ["Expanded", "Exact"],
+  "Manual KW (Competition)": ["Exact", "Phrase", "Broad"],
 
-    function populateSelect(select, options, placeholder) {
-      resetSelect(select, placeholder, false);
-      options.forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        select.appendChild(opt);
-      });
-    }
+  // BKW Defense
+  "Manual KW (BKW Defense)": ["Phrase", "Exact", "Broad"],
 
-    function updateTargetingOptions() {
-      const obj = objectiveEl.value;
-      if (!obj || !objectiveToTargeting[obj]) {
-        resetSelect(targetingEl, "Select Objective first");
-        resetSelect(matchTypeEl, "Select Targeting first");
-        updatePreview();
-        return;
-      }
-      const options = objectiveToTargeting[obj];
-      populateSelect(targetingEl, options, "Select Targeting");
-      resetSelect(matchTypeEl, "Select Targeting first");
-      updatePreview();
-    }
+  // BP Defense
+  "Manual PAT (BP Defense)": [],
 
-    function updateMatchTypeOptions() {
-      const t = targetingEl.value;
-      if (!t || !targetingToMatchType[t]) {
-        resetSelect(matchTypeEl, "Select Targeting first");
-        updatePreview();
-        return;
-      }
-      const options = targetingToMatchType[t];
-      populateSelect(matchTypeEl, options, "Select Match Type");
-      updatePreview();
-    }
+  // Ranking KW
+  "Manual KW (Ranking KW)": ["Broad", "Phrase", "Exact"]
+};
 
-    function sanitizeInitials() {
-      let v = ownerInitialsEl.value;
-      if (v.toUpperCase() === "PPCN") {
-        ownerInitialsEl.value = "PPCN";
-        return;
-      }
-      v = v.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 2);
-      ownerInitialsEl.value = v;
-    }
+// Inputs
+const brand = document.getElementById("brandCode");
+const productShort = document.getElementById("productShort");
+const parentEl = document.getElementById("parent");
+const childEl = document.getElementById("child");
+const objective = document.getElementById("objective");
+const targeting = document.getElementById("targeting");
+const matchType = document.getElementById("matchType");
+const initials = document.getElementById("ownerInitials");
+const preview = document.getElementById("campaignPreview");
 
-    function buildCampaignName() {
-      const brand = brandCodeEl.value || "";
-      const prod = productShortEl.value || "";
-      const parent = parentEl.value || "";
-      const child = childEl.value || "";
-      const obj = objectiveEl.value || "";
-      const targeting = targetingEl.value || "";
-      const match = matchTypeEl.value || "";
-      const initials = ownerInitialsEl.value || "";
+// Update Targeting when Objective changes
+objective.addEventListener("change", () => {
+  const obj = objective.value;
 
-      const parts = [
-        brand,
-        prod,
-        parent,
-        child,
-        obj,
-        targeting,
-        match,
-        initials
-      ].filter(Boolean);
+  targeting.innerHTML = "";
+  matchType.innerHTML = "";
 
-      return parts.join(" | ");
-    }
+  if (!obj) {
+    targeting.disabled = true;
+    matchType.disabled = true;
+    updatePreview();
+    return;
+  }
 
-    function updatePreview() {
-      const name = buildCampaignName();
-      if (!name) {
-        previewEl.textContent = "Waiting for selections…";
-        previewEl.classList.add("placeholder");
-      } else {
-        previewEl.textContent = name;
-        previewEl.classList.remove("placeholder");
-      }
-    }
+  const tgts = objectiveToTargeting[obj];
+  targeting.disabled = false;
+  targeting.innerHTML = `<option value="">Select Targeting</option>`;
+  tgts.forEach(t => {
+    targeting.innerHTML += `<option value="${t}">${t}</option>`;
+  });
 
-    brandCodeEl.addEventListener("change", updatePreview);
-    productShortEl.addEventListener("input", updatePreview);
-    parentEl.addEventListener("input", updatePreview);
-    childEl.addEventListener("input", updatePreview);
+  matchType.disabled = true;
+  matchType.innerHTML = `<option value="">Select Targeting first</option>`;
 
-    objectiveEl.addEventListener("change", updateTargetingOptions);
-    targetingEl.addEventListener("change", updateMatchTypeOptions);
-    matchTypeEl.addEventListener("change", updatePreview);
+  updatePreview();
+});
 
-    ownerInitialsEl.addEventListener("input", () => {
-      sanitizeInitials();
-      updatePreview();
-    });
+// Update Match Type Logic
+targeting.addEventListener("change", () => {
+  const obj = objective.value;
+  const tgt = targeting.value;
 
-    usePPCNButton.addEventListener("click", () => {
-      ownerInitialsEl.value = "PPCN";
-      updatePreview();
-    });
+  if (!tgt) {
+    matchType.disabled = true;
+    matchType.innerHTML = `<option>Select Targeting first</option>`;
+    updatePreview();
+    return;
+  }
 
-    copyButton.addEventListener("click", () => {
-      const text = buildCampaignName();
-      if (!text) return alert("Nothing to copy.");
-      navigator.clipboard.writeText(text);
-      alert("Copied!");
-    });
+  // Dynamic key
+  const comboKey = `${tgt} (${obj})`;
+  const mt = targetingToMatchType[comboKey];
 
-  </script>
+  // If no match types allowed
+  if (!mt || mt.length === 0) {
+    matchType.disabled = true;
+    matchType.innerHTML = `<option value="">No Match Type</option>`;
+    updatePreview();
+    return;
+  }
+
+  matchType.disabled = false;
+  matchType.innerHTML = `<option value="">Select Match Type</option>`;
+  mt.forEach(m => {
+    matchType.innerHTML += `<option value="${m}">${m}</option>`;
+  });
+
+  updatePreview();
+});
+
+// Auto-uppercase initials
+initials.addEventListener("input", () => {
+  let v = initials.value.toUpperCase();
+  if (v !== "PPCN") {
+    v = v.replace(/[^A-Z]/g, "").slice(0, 2);
+  }
+  initials.value = v;
+  updatePreview();
+});
+
+// Build campaign name (Option A)
+function buildCampaignName() {
+  const parts = [
+    brand.value,
+    productShort.value,
+    parentEl.value,
+    childEl.value,
+    objective.value,
+    targeting.value,
+    matchType.value,
+    initials.value
+  ].filter(Boolean);
+
+  return parts.join(" | ");
+}
+
+// Update live preview
+function updatePreview() {
+  const name = buildCampaignName();
+  if (!name) {
+    preview.textContent = "Waiting...";
+    preview.classList.add("placeholder");
+  } else {
+    preview.textContent = name;
+    preview.classList.remove("placeholder");
+  }
+}
+
+brand.addEventListener("change", updatePreview);
+productShort.addEventListener("input", updatePreview);
+parentEl.addEventListener("input", updatePreview);
+childEl.addEventListener("input", updatePreview);
+matchType.addEventListener("change", updatePreview);
+
+// Copy button
+document.getElementById("copyButton").addEventListener("click", () => {
+  const name = buildCampaignName();
+  if (!name) return alert("Nothing to copy!");
+  navigator.clipboard.writeText(name);
+  alert("Copied!");
+});
+</script>
+
 </body>
 </html>
+
 
