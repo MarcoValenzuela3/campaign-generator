@@ -144,7 +144,7 @@
 
       <div>
         <label>Owner's Name</label>
-        <select id="ownerInitials">
+        <select id="ownerName">
           <option value="">Select Owner</option>
           <option value="Summer">Summer</option>
           <option value="Aurora">Aurora</option>
@@ -165,7 +165,7 @@
 
 <script>
 /* ----------------------------------------------------------
-   OBJECTIVE → TARGETING RULES
+   OBJECTIVE → TARGETING RULES (Logic Set B)
 ---------------------------------------------------------- */
 const objectiveToTargeting = {
   "Discover": ["Auto", "Category", "Manual KW"],
@@ -176,12 +176,12 @@ const objectiveToTargeting = {
 };
 
 /* ----------------------------------------------------------
-   TARGETING → MATCH TYPE RULES
+   TARGETING → MATCH TYPE RULES (Logic Set B)
 ---------------------------------------------------------- */
 const targetingToMatchType = {
   // Discover
   "Auto (Discover)": [],
-  "Category (Discover)": [],        // no match type
+  "Category (Discover)": [],
   "Manual KW (Discover)": ["Broad"],
 
   // Competition
@@ -208,7 +208,7 @@ const childEl = document.getElementById("child");
 const objective = document.getElementById("objective");
 const targeting = document.getElementById("targeting");
 const matchType = document.getElementById("matchType");
-const ownerName = document.getElementById("ownerInitials");
+const ownerName = document.getElementById("ownerName");
 const preview = document.getElementById("campaignPreview");
 
 /* ----------------------------------------------------------
@@ -283,9 +283,9 @@ function buildCampaignName() {
     childEl.value,
     objective.value,
     targeting.value,
-    matchType.value,
+    matchType.disabled ? null : matchType.value,
     ownerName.value
-  ].filter(Boolean);
+  ].filter(Boolean); // removes null & empty
 
   return parts.join(" | ");
 }
@@ -317,4 +317,12 @@ ownerName.addEventListener("change", updatePreview);
 /* ----------------------------------------------------------
    COPY BUTTON
 ---------------------------------------------------------- */
-document.getElementById("copyButton").addEvent
+document.getElementById("copyButton").addEventListener("click", () => {
+  const name = buildCampaignName();
+  if (!name) return alert("Nothing to copy!");
+  navigator.clipboard.writeText(name);
+  alert("Copied!");
+});
+</script>
+</body>
+</html>
