@@ -32,8 +32,8 @@
     }
     label {
       font-size: 0.8rem;
-      letter-spacing: 0.05em;
       color: #9ca3af;
+      letter-spacing: 0.03em;
     }
     input, select {
       padding: 8px 10px;
@@ -52,6 +52,9 @@
       grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
       gap: 16px;
       margin-top: 12px;
+    }
+    .keyword-input {
+      margin-top: 8px;
     }
     .output-card {
       margin-top: 24px;
@@ -133,6 +136,15 @@
         <select id="targeting" disabled>
           <option value="">Select Objective first</option>
         </select>
+
+        <!-- Keyword text field appears only when needed -->
+        <input 
+          id="keywordInput" 
+          class="keyword-input" 
+          type="text" 
+          placeholder="Enter keyword…" 
+          style="display:none;" 
+        />
       </div>
 
       <div>
@@ -165,14 +177,14 @@
 
 <script>
 /* ----------------------------------------------------------
-   OBJECTIVE → TARGETING RULES (Logic Set B)
+   OBJECTIVE → TARGETING RULES (Logic Set B + Keyword Option)
 ---------------------------------------------------------- */
 const objectiveToTargeting = {
   "Discover": ["Auto", "Category", "Manual KW"],
   "Competition": ["Manual PAT", "Manual KW"],
   "BKW Defense": ["Manual KW"],
   "BP Defense": ["Manual PAT"],
-  "Ranking KW": ["Manual KW"]
+  "Ranking KW": ["Manual KW", "Keyword"]  // ⭐ Added Keyword option
 };
 
 /* ----------------------------------------------------------
@@ -195,7 +207,8 @@ const targetingToMatchType = {
   "Manual PAT (BP Defense)": [],
 
   // Ranking KW
-  "Manual KW (Ranking KW)": ["Broad", "Phrase", "Exact"]
+  "Manual KW (Ranking KW)": ["Broad", "Phrase", "Exact"],
+  "Keyword (Ranking KW)": ["Broad", "Phrase", "Exact"]  // ⭐ Keyword matches same rules
 };
 
 /* ----------------------------------------------------------
@@ -209,6 +222,7 @@ const objective = document.getElementById("objective");
 const targeting = document.getElementById("targeting");
 const matchType = document.getElementById("matchType");
 const ownerName = document.getElementById("ownerName");
+const keywordInput = document.getElementById("keywordInput");
 const preview = document.getElementById("campaignPreview");
 
 /* ----------------------------------------------------------
@@ -219,6 +233,8 @@ objective.addEventListener("change", () => {
 
   targeting.innerHTML = "";
   matchType.innerHTML = "";
+  keywordInput.style.display = "none"; // hide keyword input
+  keywordInput.value = "";
 
   if (!obj) {
     targeting.disabled = true;
@@ -240,11 +256,19 @@ objective.addEventListener("change", () => {
 });
 
 /* ----------------------------------------------------------
-   UPDATE MATCH TYPE WHEN TARGETING CHANGES
+   UPDATE MATCH TYPE + KEYWORD FIELD
 ---------------------------------------------------------- */
 targeting.addEventListener("change", () => {
   const obj = objective.value;
   const tgt = targeting.value;
+
+  // Handle keyword text field
+  if (tgt === "Keyword") {
+    keywordInput.style.display = "block";  
+  } else {
+    keywordInput.style.display = "none";
+    keywordInput.value = "";
+  }
 
   if (!tgt) {
     matchType.disabled = true;
@@ -273,19 +297,26 @@ targeting.addEventListener("change", () => {
 });
 
 /* ----------------------------------------------------------
-   BUILD CAMPAIGN NAME
+   BUILD CAMPAIGN NAME (Keyword Logic Included)
 ---------------------------------------------------------- */
 function buildCampaignName() {
+  let targetingValue = targeting.value;
+
+  // Replace "Keyword" with user input
+  if (targetingValue === "Keyword") {
+    targetingValue = keywordInput.value.trim() || "";
+  }
+
   const parts = [
     brand.value,
     productShort.value,
     parentEl.value,
     childEl.value,
     objective.value,
-    targeting.value,
+    targetingValue,
     matchType.disabled ? null : matchType.value,
     ownerName.value
-  ].filter(Boolean); // removes null & empty
+  ].filter(Boolean);
 
   return parts.join(" | ");
 }
@@ -311,6 +342,7 @@ brand.addEventListener("change", updatePreview);
 productShort.addEventListener("input", updatePreview);
 parentEl.addEventListener("input", updatePreview);
 childEl.addEventListener("input", updatePreview);
+keywordInput.addEventListener("input", updatePreview);
 matchType.addEventListener("change", updatePreview);
 ownerName.addEventListener("change", updatePreview);
 
