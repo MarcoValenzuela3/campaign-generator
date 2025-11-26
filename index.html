@@ -143,7 +143,7 @@
       </div>
 
       <div>
-        <label>Owner (Initials)</label>
+        <label>Owner's Name</label>
         <select id="ownerInitials">
           <option value="">Select Owner</option>
           <option value="Summer">Summer</option>
@@ -181,7 +181,7 @@ const objectiveToTargeting = {
 const targetingToMatchType = {
   // Discover
   "Auto (Discover)": [],
-  "Category (Discover)": [],        // UPDATED: no match type
+  "Category (Discover)": [],        // no match type
   "Manual KW (Discover)": ["Broad"],
 
   // Competition
@@ -208,7 +208,7 @@ const childEl = document.getElementById("child");
 const objective = document.getElementById("objective");
 const targeting = document.getElementById("targeting");
 const matchType = document.getElementById("matchType");
-const initials = document.getElementById("ownerInitials");
+const ownerName = document.getElementById("ownerInitials");
 const preview = document.getElementById("campaignPreview");
 
 /* ----------------------------------------------------------
@@ -284,7 +284,7 @@ function buildCampaignName() {
     objective.value,
     targeting.value,
     matchType.value,
-    initials.value
+    ownerName.value
   ].filter(Boolean);
 
   return parts.join(" | ");
@@ -312,17 +312,9 @@ productShort.addEventListener("input", updatePreview);
 parentEl.addEventListener("input", updatePreview);
 childEl.addEventListener("input", updatePreview);
 matchType.addEventListener("change", updatePreview);
-initials.addEventListener("change", updatePreview);
+ownerName.addEventListener("change", updatePreview);
 
 /* ----------------------------------------------------------
    COPY BUTTON
 ---------------------------------------------------------- */
-document.getElementById("copyButton").addEventListener("click", () => {
-  const name = buildCampaignName();
-  if (!name) return alert("Nothing to copy!");
-  navigator.clipboard.writeText(name);
-  alert("Copied!");
-});
-</script>
-</body>
-</html>
+document.getElementById("copyButton").addEvent
