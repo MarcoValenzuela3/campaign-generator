@@ -22,20 +22,17 @@
       max-width: 960px;
       background: #020617;
       border-radius: 18px;
-      padding: 24px 24px 28px;
+      padding: 24px;
       border: 1px solid #1e293b;
       box-shadow: 0 20px 40px rgba(15,23,42,0.9);
     }
     h1 {
       margin-top: 0;
       font-size: 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
     label {
-      font-size: 0.75rem;
-      letter-spacing: 0.07em;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
       color: #9ca3af;
     }
     input, select {
@@ -58,19 +55,19 @@
     }
     .output-card {
       margin-top: 24px;
-      padding: 14px;
+      padding: 16px;
       border-radius: 14px;
       border: 1px solid #1f2937;
-      background: radial-gradient(circle at top left, #0f172a, #020617 40%);
+      background: #0f172a;
     }
     .campaign-preview {
+      background: #020617;
+      border: 1px solid #111827;
+      border-radius: 10px;
+      padding: 10px;
       font-family: "JetBrains Mono", monospace;
       font-size: 0.9rem;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #111827;
-      background: #020617;
-      min-height: 25px;
+      min-height: 24px;
     }
     .placeholder {
       color: #6b7280;
@@ -83,6 +80,7 @@
       background: #16a34a;
       color: white;
       cursor: pointer;
+      margin-top: 10px;
       font-weight: 600;
     }
   </style>
@@ -145,22 +143,30 @@
       </div>
 
       <div>
-        <label>Owner Initials</label>
-        <input id="ownerInitials" maxlength="4" placeholder="e.g. MV" />
+        <label>Owner (Initials)</label>
+        <select id="ownerInitials">
+          <option value="">Select Owner</option>
+          <option value="Summer">Summer</option>
+          <option value="Aurora">Aurora</option>
+          <option value="Kiki">Kiki</option>
+          <option value="Isabella">Isabella</option>
+          <option value="Ming">Ming</option>
+          <option value="John">John</option>
+        </select>
       </div>
     </div>
 
     <div class="output-card">
       <h3>Campaign Name</h3>
       <div id="campaignPreview" class="campaign-preview placeholder">Waiting...</div>
-      <br />
       <button id="copyButton" class="button-primary">Copy</button>
     </div>
   </div>
 
 <script>
-/* ------------------ NEW UPDATED LOGIC --------------------- */
-
+/* ----------------------------------------------------------
+   OBJECTIVE → TARGETING RULES
+---------------------------------------------------------- */
 const objectiveToTargeting = {
   "Discover": ["Auto", "Category", "Manual KW"],
   "Competition": ["Manual PAT", "Manual KW"],
@@ -169,10 +175,13 @@ const objectiveToTargeting = {
   "Ranking KW": ["Manual KW"]
 };
 
+/* ----------------------------------------------------------
+   TARGETING → MATCH TYPE RULES
+---------------------------------------------------------- */
 const targetingToMatchType = {
   // Discover
-  "Auto": [],
-  "Category": ["Broad"],
+  "Auto (Discover)": [],
+  "Category (Discover)": [],        // UPDATED: no match type
   "Manual KW (Discover)": ["Broad"],
 
   // Competition
@@ -189,7 +198,9 @@ const targetingToMatchType = {
   "Manual KW (Ranking KW)": ["Broad", "Phrase", "Exact"]
 };
 
-// Inputs
+/* ----------------------------------------------------------
+   INPUT ELEMENTS
+---------------------------------------------------------- */
 const brand = document.getElementById("brandCode");
 const productShort = document.getElementById("productShort");
 const parentEl = document.getElementById("parent");
@@ -200,7 +211,9 @@ const matchType = document.getElementById("matchType");
 const initials = document.getElementById("ownerInitials");
 const preview = document.getElementById("campaignPreview");
 
-// Update Targeting when Objective changes
+/* ----------------------------------------------------------
+   UPDATE TARGETING WHEN OBJECTIVE CHANGES
+---------------------------------------------------------- */
 objective.addEventListener("change", () => {
   const obj = objective.value;
 
@@ -214,20 +227,21 @@ objective.addEventListener("change", () => {
     return;
   }
 
-  const tgts = objectiveToTargeting[obj];
+  const options = objectiveToTargeting[obj];
   targeting.disabled = false;
   targeting.innerHTML = `<option value="">Select Targeting</option>`;
-  tgts.forEach(t => {
+  options.forEach(t => {
     targeting.innerHTML += `<option value="${t}">${t}</option>`;
   });
 
   matchType.disabled = true;
-  matchType.innerHTML = `<option value="">Select Targeting first</option>`;
-
+  matchType.innerHTML = `<option>Select Targeting first</option>`;
   updatePreview();
 });
 
-// Update Match Type Logic
+/* ----------------------------------------------------------
+   UPDATE MATCH TYPE WHEN TARGETING CHANGES
+---------------------------------------------------------- */
 targeting.addEventListener("change", () => {
   const obj = objective.value;
   const tgt = targeting.value;
@@ -239,38 +253,28 @@ targeting.addEventListener("change", () => {
     return;
   }
 
-  // Dynamic key
   const comboKey = `${tgt} (${obj})`;
-  const mt = targetingToMatchType[comboKey];
+  const allowed = targetingToMatchType[comboKey];
 
-  // If no match types allowed
-  if (!mt || mt.length === 0) {
+  if (!allowed || allowed.length === 0) {
     matchType.disabled = true;
-    matchType.innerHTML = `<option value="">No Match Type</option>`;
+    matchType.innerHTML = `<option>No Match Type</option>`;
     updatePreview();
     return;
   }
 
   matchType.disabled = false;
   matchType.innerHTML = `<option value="">Select Match Type</option>`;
-  mt.forEach(m => {
+  allowed.forEach(m => {
     matchType.innerHTML += `<option value="${m}">${m}</option>`;
   });
 
   updatePreview();
 });
 
-// Auto-uppercase initials
-initials.addEventListener("input", () => {
-  let v = initials.value.toUpperCase();
-  if (v !== "PPCN") {
-    v = v.replace(/[^A-Z]/g, "").slice(0, 2);
-  }
-  initials.value = v;
-  updatePreview();
-});
-
-// Build campaign name (Option A)
+/* ----------------------------------------------------------
+   BUILD CAMPAIGN NAME
+---------------------------------------------------------- */
 function buildCampaignName() {
   const parts = [
     brand.value,
@@ -286,7 +290,9 @@ function buildCampaignName() {
   return parts.join(" | ");
 }
 
-// Update live preview
+/* ----------------------------------------------------------
+   UPDATE PREVIEW
+---------------------------------------------------------- */
 function updatePreview() {
   const name = buildCampaignName();
   if (!name) {
@@ -298,13 +304,19 @@ function updatePreview() {
   }
 }
 
+/* ----------------------------------------------------------
+   EVENT LISTENERS
+---------------------------------------------------------- */
 brand.addEventListener("change", updatePreview);
 productShort.addEventListener("input", updatePreview);
 parentEl.addEventListener("input", updatePreview);
 childEl.addEventListener("input", updatePreview);
 matchType.addEventListener("change", updatePreview);
+initials.addEventListener("change", updatePreview);
 
-// Copy button
+/* ----------------------------------------------------------
+   COPY BUTTON
+---------------------------------------------------------- */
 document.getElementById("copyButton").addEventListener("click", () => {
   const name = buildCampaignName();
   if (!name) return alert("Nothing to copy!");
@@ -312,7 +324,5 @@ document.getElementById("copyButton").addEventListener("click", () => {
   alert("Copied!");
 });
 </script>
-
 </body>
 </html>
-
