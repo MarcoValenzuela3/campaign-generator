@@ -177,14 +177,14 @@
 
 <script>
 /* ----------------------------------------------------------
-   OBJECTIVE → TARGETING RULES (Logic Set B + Keyword Option)
+   OBJECTIVE → TARGETING RULES (Updated: Ranking KW only = Keyword)
 ---------------------------------------------------------- */
 const objectiveToTargeting = {
   "Discover": ["Auto", "Category", "Manual KW"],
   "Competition": ["Manual PAT", "Manual KW"],
   "BKW Defense": ["Manual KW"],
   "BP Defense": ["Manual PAT"],
-  "Ranking KW": ["Manual KW", "Keyword"]  // ⭐ Added Keyword option
+  "Ranking KW": ["Keyword"]   // ⭐ Manual KW removed
 };
 
 /* ----------------------------------------------------------
@@ -207,8 +207,7 @@ const targetingToMatchType = {
   "Manual PAT (BP Defense)": [],
 
   // Ranking KW
-  "Manual KW (Ranking KW)": ["Broad", "Phrase", "Exact"],
-  "Keyword (Ranking KW)": ["Broad", "Phrase", "Exact"]  // ⭐ Keyword matches same rules
+  "Keyword (Ranking KW)": ["Broad", "Phrase", "Exact"]  // ⭐ now only keyword option
 };
 
 /* ----------------------------------------------------------
@@ -233,7 +232,7 @@ objective.addEventListener("change", () => {
 
   targeting.innerHTML = "";
   matchType.innerHTML = "";
-  keywordInput.style.display = "none"; // hide keyword input
+  keywordInput.style.display = "none"; 
   keywordInput.value = "";
 
   if (!obj) {
@@ -262,9 +261,8 @@ targeting.addEventListener("change", () => {
   const obj = objective.value;
   const tgt = targeting.value;
 
-  // Handle keyword text field
   if (tgt === "Keyword") {
-    keywordInput.style.display = "block";  
+    keywordInput.style.display = "block";
   } else {
     keywordInput.style.display = "none";
     keywordInput.value = "";
@@ -302,7 +300,6 @@ targeting.addEventListener("change", () => {
 function buildCampaignName() {
   let targetingValue = targeting.value;
 
-  // Replace "Keyword" with user input
   if (targetingValue === "Keyword") {
     targetingValue = keywordInput.value.trim() || "";
   }
